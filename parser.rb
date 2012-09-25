@@ -17,17 +17,17 @@ class Parse
     scan_results = @@text.scan(/(\<\%=?)(.*?)(-?\%\>)/m)
     scan_results.each do |result|
       parameters = check_regex_results(result)
-      substitution_string = ""
       if parameters[:equals]
         # if there is an equal sign, then we must output the result
         substitution_string = eval(result[1], @@binding_wrapper.get_binding).to_s
+        if !parameters[:no_line_break]
+          # put in a line break only when we output results, and only when there's supposed to be a line break
+          substitution_string += "\n"
+        end
+        results << substitution_string
       else
         # otherwise, we only evaluate the result
         eval(result[0], @@binding_wrapper.get_binding) 
-      end
-      if parameters[:equals] && !parameters[:no_line_break]
-        # put in a line break only when we output results, and only when there's supposed to be a line break
-        substitution_string += "\n"
       end
     end
     results
@@ -38,7 +38,7 @@ class Parse
     new_text = @@text
     counter = 0
     while new_text =~ /\<\%=(.*?)-?\%\>/m
-    	new_text = new_text.gsub(/\<\%=(.*?)-?\%\>/m, results[counter])
+    	new_text = new_text.sub(/\<\%=(.*?)-?\%\>/m, results[counter])
         counter += 1
     end
     return new_text
