@@ -17,7 +17,6 @@ def merged_data_files
 end
 
 FILES_TO_CONVERT.each do |input_file, output_file|
-  puts merged_data_files
   parser = Parse.new(input_file, merged_data_files)
-  File.new(output_file, 'w'){|f| f.write(parse.perform_code)}
+  File.open(output_file, 'w'){|f| f.write(parser.perform_code)}
 end

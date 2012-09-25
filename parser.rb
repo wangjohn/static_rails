@@ -6,10 +6,10 @@ class Parse
     :equals => /\<\%=/
   }
 
-  def initialize(htmlfile, datafile)
+  def initialize(htmlfile, data_string=nil)
     @@binding_wrapper = BindingWrapper.new
     @@text = File.new(htmlfile, 'r').read
-    inject_data(datafile)
+    inject_data(data_string) if data_string
   end
 
   def scan_for_ruby
@@ -44,9 +44,8 @@ class Parse
     return new_text
   end
 
-  def inject_data(datafile)
-    file = File.new(datafile, 'r').read
-    eval(file, @@binding_wrapper.get_binding)
+  def inject_data(data_string)
+    eval(data_string, @@binding_wrapper.get_binding)
   end
 
   private 
@@ -69,6 +68,3 @@ class BindingWrapper
   end
 end
 
-
-parsed = Parse.new('test_html.html.erb', 'test_data.rb')
-puts parsed.perform_code
